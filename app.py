@@ -1,11 +1,12 @@
 import os
 import pprint
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, flash
 from werkzeug import secure_filename
 
 
 app = Flask(__name__)
 
+app.secret_key = 'skfjsfkfklfjlsfjfklfjks'
 # This is the path to the upload directory
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 # These are the extension that we are accepting to be uploaded
@@ -45,8 +46,7 @@ def upload():
         file.save(os.path.join(app.config['UPLOAD_FOLDER']+"videos/", filename))
         # Redirect the user to the uploaded_file route, which
         # will basicaly show on the browser the uploaded file
-
-
+        flash("File: "+filename+" caricato")
         return redirect(url_for('index'))
         #return redirect(url_for('uploaded_file',
         #                        filename=filename))
@@ -60,6 +60,10 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER']+'videos/',
                                filename)
 
+@app.route('/uploads_thumb/<filename>')
+def uploaded_thumb(filename):
+    basepath= os.path.splitext(filename)[0]
+    return send_from_directory(app.config['UPLOAD_FOLDER']+'/thumbs/'+basepath+'/', 'test_0001.png')
 
 @app.route('/generate/<filename>')
 def generate_file(filename):
