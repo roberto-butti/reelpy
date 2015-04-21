@@ -37,8 +37,9 @@
     <tr>
         <td>File: {{ item }}</td>
         <td><img src="/uploads_thumb/{{ item }}" width="100"></td>
-      <td><a href="{{ url_for('uploaded_file', filename=item) }}">Visualizza</a></td>
-      <td><a href="{{ url_for('generate_file', filename=item) }}">Genera</a></td>
+        <td><a href="{{ url_for('uploaded_file', filename=item) }}">Visualizza</a></td>
+        <td><a href="{{ url_for('generate_file', filename=item) }}">Genera</a></td>
+        <td><a href="{{ url_for('resize_thumb', filename=item) }}">Resize Thumb</a></td>
     </tr>
     {% endfor %}
   </table>
