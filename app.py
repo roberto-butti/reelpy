@@ -27,10 +27,13 @@ def allowed_file(filename):
 
 @app.route("/")
 def index():
-  listfiles = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']+"videos/"))
-  pprint.pprint(listfiles)
+    path_videos=os.path.join(app.config['UPLOAD_FOLDER']+"videos/")
+    listfiles=[]
+    if os.path.exists(path_videos):
+        listfiles = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']+"videos/"))
+    pprint.pprint(listfiles)
 
-  return render_template("index.html", listfiles=listfiles)
+    return render_template("index.html", listfiles=listfiles)
 
 # Route that will process the file upload
 @app.route('/upload', methods=['POST'])
@@ -43,7 +46,10 @@ def upload():
         filename = secure_filename(file.filename)
         # Move the file form the temporal folder to
         # the upload folder we setup
-        file.save(os.path.join(app.config['UPLOAD_FOLDER']+"videos/", filename))
+        path_videos=os.path.join(app.config['UPLOAD_FOLDER']+"videos/")
+        if not os.path.exists(path_videos):
+            os.makedirs(path_videos)
+        file.save(path_videos, filename)
         # Redirect the user to the uploaded_file route, which
         # will basicaly show on the browser the uploaded file
         flash("File: "+filename+" caricato")
