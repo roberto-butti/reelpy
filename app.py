@@ -3,6 +3,8 @@ import pprint
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, flash
 from werkzeug import secure_filename
 from PIL import Image
+from files import Files
+
 
 
 app = Flask(__name__)
@@ -20,6 +22,7 @@ app.config['config_maxframes']=80
 
 
 
+
 # For a given file, return whether it's an allowed type or not
 def allowed_file(filename):
     return '.' in filename and \
@@ -31,15 +34,17 @@ def resize(path_thumbs_original, path_thumbs_resized):
     outfilesrow=[]
     i=0
     list_files = os.listdir(path_thumbs_original)
+
     for infile in list_files:
         outfile = os.path.splitext(infile)[0] + "_thumbnail.png"
+        outfile = os.path.join(path_thumbs_resized,outfile)
         outfilesrow.append(outfile)
         if infile != outfile:
             try:
                 im = Image.open(os.path.join(path_thumbs_original,infile))
                 im.thumbnail(app.config['config_size'], Image.ANTIALIAS)
-                im.save(os.path.join(path_thumbs_resized,outfile), "PNG")
-                print(outfile)
+                im.save(outfile, "PNG")
+                #print(outfile)
             except IOError as e:
                 print "cannot create thumbnail for '%s'" % infile
                 print "I/O error({0}): {1}".format(e.errno, e.strerror)
@@ -50,7 +55,7 @@ def resize(path_thumbs_original, path_thumbs_resized):
             i=0
     if (len(outfilesrow) > 0):
         outfiles.append(outfilesrow)
-    #print outfiles
+    return outfiles
 
 def get_path_videos():
     return os.path.join(app.config['UPLOAD_FOLDER'], "videos")
@@ -78,16 +83,39 @@ def get_path_generated_thumbs_resize(filename, create_if_no_exists = False):
             os.makedirs(path)
     return  path
 
+def get_path_generated_reels(filename, create_if_no_exists = False):
+    path=os.path.join(get_path_generated_thumbs(filename), "reels")
+    if create_if_no_exists:
+        if not os.path.exists(path):
+            os.makedirs(path)
+    return  path
+
+def generate_reels(filename, outfiles):
+    howmany = 0
+    path_reels = get_path_generated_reels(filename, True)
+    for outfilesrow in outfiles:
+        images = map(Image.open, outfilesrow)
+        w = sum(i.size[0] for i in images)
+        mh = max(i.size[1] for i in images)
+        result = Image.new("RGBA", (w, mh))
+        x = 0
+        for i in images:
+            result.paste(i, (x, 0))
+            x += i.size[0]
+        result.save(os.path.join(path_reels,  "reel_" + str(howmany) + ".jpg"),  "JPEG", quality=15, optimize=True, progressive=True )
+        howmany += 1
 
 
 @app.route("/")
 def index():
-    path_videos=get_path_videos()
-    list_files=[]
+    path_videos = get_path_videos()
+    list_files = []
     if os.path.exists(path_videos):
         list_files = os.listdir(path_videos)
-    pprint.pprint(list_files)
-    return render_template("index.html", listfiles=list_files)
+    list_obj_files = [Files(f) for f in list_files]
+
+    pprint.pprint(list_obj_files)
+    return render_template("index.html", listfiles=list_obj_files)
 
 # Route that will process the file upload
 @app.route('/upload', methods=['POST'])
@@ -132,7 +160,8 @@ def generate_file(filename):
     command = "ffmpeg -i "+file_video+" -vf fps="+str(app.config['config_fps'])+" "+path_thumbs+"/test_%04d.png"
     print command
     os.system(command)
-    resize(path_thumbs, path_thumbs_resized)
+    outfiles = resize(path_thumbs, path_thumbs_resized)
+    generate_reels(filename, outfiles)
     flash("Frames extracted")
     return redirect(url_for('index'))
 
@@ -143,6 +172,15 @@ def resize_thumb(filename):
     resize(path_thumbs, path_thumbs_resized)
     flash("Thumbs resized")
     return redirect(url_for('index'))
+
+@app.route('/delete/<filename>')
+def delete_file(filename):
+    file_video = os.path.join(get_path_videos(), filename)
+
+@app.route('/view_reel/<filename>')
+def view_reel(filename):
+    file_video = os.path.join(get_path_videos(), filename)
+
 
 
 if __name__ == '__main__':

@@ -33,13 +33,21 @@
   </p>
   </div>
   <table class="table">
+      <tr>
+          <th>File Name</th>
+          <th>ID</th>
+          <th>Thumb</th>
+          <th colspan="3" >Operations</th>
+      </tr>
     {% for item in listfiles %}
     <tr>
-        <td>File: {{ item }}</td>
-        <td><img src="/uploads_thumb/{{ item }}" width="100"></td>
-        <td><a href="{{ url_for('uploaded_file', filename=item) }}">Visualizza</a></td>
-        <td><a href="{{ url_for('generate_file', filename=item) }}">Genera</a></td>
-        <td><a href="{{ url_for('resize_thumb', filename=item) }}">Resize Thumb</a></td>
+        <td>{{ item.filename_video }}</td>
+        <td>{{ item.id }}</td>
+        <td><img src="/uploads_thumb/{{ item.filename_video }}" width="100"></td>
+        <td><a href="{{ url_for('uploaded_file', filename=item.filename_video) }}">Visualizza</a></td>
+        <td><a href="{{ url_for('generate_file', filename=item.filename_video) }}">Genera</a></td>
+        <td><a href="{{ url_for('resize_thumb', filename=item.filename_video) }}">Resize Thumb</a></td>
+        <td><a href="{{ url_for('view_reel', filename=item.filename_video) }}">Visualizza Rullino</a></td>
     </tr>
     {% endfor %}
   </table>
