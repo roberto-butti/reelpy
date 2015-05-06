@@ -157,7 +157,7 @@ def generate_file(filename):
     file_video = os.path.join(get_path_videos(), filename)
     path_thumbs = get_path_generated_thumbs_original(filename, True)
     path_thumbs_resized = get_path_generated_thumbs_resize(filename, True)
-    command = "ffmpeg -i "+file_video+" -vf fps="+str(app.config['config_fps'])+" "+path_thumbs+"/test_%04d.png"
+    command = "avcon -i "+file_video+" -vf fps="+str(app.config['config_fps'])+" "+path_thumbs+"/test_%04d.png"
     print command
     os.system(command)
     outfiles = resize(path_thumbs, path_thumbs_resized)
