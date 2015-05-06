@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>File Upload</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</head>
+  <body>
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Uploading a file in python flask</div>
+
+
+  <div class="panel-body">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul class=flashes>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+
+  </div>
+  <table class="table">
+      <tr>
+          <th>File Name</th>
+          <th>Thumb</th>
+      </tr>
+    {% for item in listfiles %}
+    <tr>
+        <td>{{ item.filename_video }}</td>
+        <td><img src="/reel/{{ filename }}/{{ item.filename_video }}" height="50"></td>
+    </tr>
+    {% endfor %}
+  </table>
+
+
+</div>
+  </body>
+</html>

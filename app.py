@@ -147,6 +147,12 @@ def upload():
 def uploaded_file(filename):
     return send_from_directory(get_path_videos(), filename)
 
+@app.route('/reel/<filename>/<filenamereel>')
+def reel_thumb(filename, filenamereel):
+    path_file = get_path_generated_reels(filename)
+    print(path_file)
+    return send_from_directory(path_file, filenamereel)
+
 @app.route('/uploads_thumb/<filename>')
 def uploaded_thumb(filename):
     path_file = get_path_generated_thumbs_original(filename)
@@ -179,13 +185,21 @@ def delete_file(filename):
 
 @app.route('/view_reel/<filename>')
 def view_reel(filename):
-    file_video = os.path.join(get_path_videos(), filename)
+    #file_video = os.path.join(get_path_videos(), filename)
+    path_reels = get_path_generated_reels(filename, True)
+    list_files = []
+    if os.path.exists(path_reels):
+        list_files = os.listdir(path_reels)
+    list_obj_files = [Files(f) for f in list_files]
+
+    pprint.pprint(list_obj_files)
+    return render_template("reels.html", listfiles=list_obj_files, filename=filename)
 
 
 
 if __name__ == '__main__':
     app.run(
-        host="0.0.0.0",
+        #host="0.0.0.0",
         port=int("5000"),
         debug=True
     )
