@@ -115,6 +115,7 @@ def index():
     list_obj_files = [Files(f) for f in list_files]
 
     pprint.pprint(list_obj_files)
+    print("CIAO UOMORANDO MI VEDI?")
     return render_template("index.html", listfiles=list_obj_files)
 
 # Route that will process the file upload
