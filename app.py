@@ -16,7 +16,7 @@ app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['ALLOWED_EXTENSIONS'] = set(['mp4', 'mov'])
 
 app.config['config_size']=300, 168
-app.config['config_fps']=1
+app.config['config_fps']=8
 app.config['config_maxframes']=80
 
 
